@@ -187,6 +187,8 @@ export interface RadarData {
   calibration: Calibration;
   category_multiples: CategoryMultiple[];
   funnel: Funnel;
+  /** The watchlist's slugs, so the page can label each row Watchlist or Early. */
+  watchlist: string[];
   rows: RadarRow[];
   live: LiveRow[];
 }
@@ -421,6 +423,7 @@ function actionFor(p: SnapshotProtocol, capital: number, chain: string): string 
   if (c.includes('lend') || c.includes('cdp') || c.includes('collateral')) return `Supply $${capital} of USDC to ${name} on ${chain} and keep the position open.`;
   if (c.includes('leveraged farm')) return `Open a leveraged farm with $${capital} on ${name} on ${chain} at the lowest leverage it offers, and watch the health factor.`;
   if (c.includes('liquidity manager')) return `Deposit $${capital} into a ${name} managed liquidity position on ${chain} and keep it in range.`;
+  if (c.includes('index')) return `Buy $${capital} of the ${name} index token on ${chain} and hold it.`;
   if (c.includes('dex') || c.includes('exchange')) return `Provide $${capital} of liquidity to ${name}'s main pool on ${chain} and keep the position open.`;
   if (c.includes('yield aggregator') || c.includes('yield')) return `Deposit $${capital} of USDC into a ${name} yield vault on ${chain} and keep the shares.`;
   if (c.includes('basis')) return `Deposit $${capital} into a ${name} basis strategy on ${chain} and hold the position through one funding cycle.`;
@@ -435,7 +438,6 @@ function actionFor(p: SnapshotProtocol, capital: number, chain: string): string 
   if (c.includes('cedefi')) return `Deposit $${capital} into a ${name} vault on ${chain} and keep the shares.`;
   if (c.includes('payment')) return `Fund $${capital} and make one real payment through ${name} on ${chain}.`;
   if (c.includes('governance')) return `Deposit $${capital} and vote in one governance round on ${name}.`;
-  if (c.includes('index')) return `Buy $${capital} of the ${name} index token on ${chain} and hold it.`;
   if (c.includes('farm')) return `Deposit $${capital} into a ${name} farm on ${chain} and keep the position staked.`;
   if (c.includes('card')) return `Load $${capital} onto the ${name} card and spend it in one real purchase.`;
   if (c.includes('chain')) return `Bridge $${capital} of USDC to ${name}, swap once, and deposit into one of its native apps.`;
@@ -603,6 +605,7 @@ export function buildRadar(snapshot: Snapshot): { board: BoardRow[]; radar: Rada
     calibration: calibrate(snapshot),
     category_multiples: categoryMultiples(snapshot),
     funnel: funnelOf(snapshot, board.length),
+    watchlist: [...snapshot.watchlist],
     rows: board.map(radarRow),
     live,
   };
